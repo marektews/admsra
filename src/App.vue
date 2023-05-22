@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import xlsxIcon from './components/xlsxIcon.vue'
 
 const records = ref([])
 
@@ -53,15 +54,34 @@ function busDistance(v) {
     }
     return v
 }
+
+function onExport() {
+    window.location = '/api/sra/export/xlsx'
+}
 </script>
 
 <template>
     <header>
-        <div class="title">System Rejestracji Autokarów - zgłoszenia</div>
+        <div class="title">Ankiety autokarów</div>
+        <button 
+            class="btn btn-outline-primary" 
+            :disabled="records.length === 0"
+            @click="onExport"
+        >
+            <div class="mybtn">
+                <xlsxIcon width="24" height="24" />
+                <div>Eksport do formatu Excela</div>
+            </div>
+        </button>
     </header>
 
     <main>
-        <table class="table table-sm table-dark table-hover table-bordered">
+        <div v-if="records.length === 0" class="loading">
+            <div class="spinner-border" role="status" />
+            <div>Proszę czekać. Trwa pobieranie danych ...</div>
+        </div>
+
+        <table v-else class="table table-sm table-dark table-hover table-bordered">
             <thead>
                 <tr>
                     <th rowspan="2">#</th>
@@ -135,6 +155,7 @@ function busDistance(v) {
 header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 16pt;
     margin-bottom: 24pt;
 }
@@ -158,5 +179,19 @@ table {
     font-size: 10pt;
     text-align: center;
     vertical-align: middle;
+}
+
+div.mybtn {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6pt;
+}
+
+.loading {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 9pt;
 }
 </style>
