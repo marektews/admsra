@@ -1,153 +1,24 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import xlsxIcon from './components/xlsxIcon.vue'
+import { ref } from 'vue'
+import TableView from './view/TableView.vue'
+import RecordEditView from './view/RecordEditView.vue'
 
-const records = ref([])
-
-onMounted(() => {
-    fetch('/api/sra/table', {
-        method: "GET",
-        headers: {
-            "Accept": "application/json"
-        }
-    })
-    .then(response => {
-        console.log('Get SRA response:', response)
-        if(response.status === 200)
-            return response.json()
-        else
-            return []
-    })
-    .then(d => records.value = d)
-    .catch(err => console.log('Get SRA table error:', err))
-})
-
-function busType(bt) {
-    switch(bt) {
-        case "minibus_9": return "minibus 9"
-        case "minibus_30": return "minibus 30"
-        case "autokar_50": return "autokar 50"
-        case "autokar_70": return "autokar 60-70"
-        case "autobus_12m": return "autobus 12m"
-        case "autobus_18m": return "autobus 18m"
-    }
-    return bt
-}
-
-function parkingMode(pm) {
-    if(pm == "not_needed")
-        return "NIE"
-    else if(pm == "needed")
-        return "TAK"
-    else
-        return pm
-}
-
-function busDistance(v) {
-    switch(v) {
-        case "15km": return "15km"
-        case "25km": return "25km"
-        case "50km": return "50km"
-        case "100km": return "100km"
-        case "200km": return "200km"
-        case "more200km": return "> 200km"
-    }
-    return v
-}
-
-function onExport() {
-    window.location = '/api/sra/export/xlsx'
-}
+const edited = ref(undefined)
 </script>
 
 <template>
     <header>
         <div class="title">Ankiety autokarów</div>
-        <button 
-            class="btn btn-outline-primary" 
-            :disabled="records.length === 0"
-            @click="onExport"
-        >
-            <div class="mybtn">
-                <xlsxIcon width="24" height="24" />
-                <div>Eksport do formatu Excela</div>
-            </div>
-        </button>
     </header>
 
     <main>
-        <div v-if="records.length === 0" class="loading">
-            <div class="spinner-border" role="status" />
-            <div>Proszę czekać. Trwa pobieranie danych ...</div>
-        </div>
-
-        <table v-else class="table table-sm table-dark table-hover table-bordered">
-            <thead>
-                <tr>
-                    <th rowspan="2">#</th>
-                    <th rowspan="2">Data zgłoszenia</th>
-                    <th colspan="3">Zbór</th>
-                    <th colspan="3">Bus</th>
-                    <th colspan="3">Pilot</th>
-                    <th rowspan="2">Info</th>
-                </tr>
-                <tr>
-                    <th>Język</th>
-                    <th>Numer</th>
-                    <th>Nazwa</th>
-
-                    <th>Typ</th>
-                    <th>Trasa</th>
-                    <th>Parking</th>
-
-                    <th>Piątek</th>
-                    <th>Sobota</th>
-                    <th>Niedziela</th>
-                </tr>
-            </thead>
-            <tbody class="table-group-divider">
-                <tr v-for="(item, index) in records" :key="index">
-                    <td>{{ index + 1 }}</td>
-
-                    <td>{{ item.timestamp }}</td>
-
-                    <td>{{ item.zbor.lang }}</td>
-                    <td>{{ item.zbor.number }}</td>
-                    <td>{{ item.zbor.name }}</td>
-
-                    <td>{{ busType(item.bus.type) }}</td>
-                    <td>{{ busDistance(item.bus.distance) }}</td>
-                    <td>{{ parkingMode(item.bus.parking_mode) }}</td>
-
-                    <template v-if="!('pilot2' in item)">
-                        <td colspan="3">
-                            <div>{{ item.pilot1.fn }} {{ item.pilot1.ln }}</div>
-                            <div>{{ item.pilot1.phone }}</div>
-                            <div>{{ item.pilot1.email }}</div>
-                        </td>
-                    </template>
-                    <template v-else>
-                        <td>
-                            <div>{{ item.pilot1.fn }} {{ item.pilot1.ln }}</div>
-                            <div>{{ item.pilot1.phone }}</div>
-                            <div>{{ item.pilot1.email }}</div>
-                        </td>
-                        <td>
-                            <div>{{ item.pilot2.fn }} {{ item.pilot2.ln }}</div>
-                            <div>{{ item.pilot2.phone }}</div>
-                            <div>{{ item.pilot2.email }}</div>
-                        </td>
-                        <td>
-                            <div>{{ item.pilot3.fn }} {{ item.pilot3.ln }}</div>
-                            <div>{{ item.pilot3.phone }}</div>
-                            <div>{{ item.pilot3.email }}</div>
-                        </td>
-                    </template>
-
-                    <td>{{ item.info }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <RecordEditView v-if="edited !== undefined" 
+            :record="edited" 
+            @back="edited = undefined"
+        />
+        <TableView v-else 
+            @edit="edited = $event" 
+        />
     </main>
 </template>
 
@@ -175,23 +46,4 @@ main > div {
     flex-grow: 1;
 }
 
-table {
-    font-size: 10pt;
-    text-align: center;
-    vertical-align: middle;
-}
-
-div.mybtn {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 6pt;
-}
-
-.loading {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 9pt;
-}
 </style>
