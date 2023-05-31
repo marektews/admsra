@@ -37,6 +37,31 @@ const pilot3 = reactive({
     number: ""
 })
 
+const phone1Length = computed(() => phone_length(pilot1))
+const phone1Format = computed(() => phone_format(pilot1))
+const phone1Pattern = computed(() => phone_pattern(pilot1))
+const phone2Length = computed(() => phone_length(pilot2))
+const phone2Format = computed(() => phone_format(pilot2))
+const phone2Pattern = computed(() => phone_pattern(pilot2))
+const phone3Length = computed(() => phone_length(pilot3))
+const phone3Format = computed(() => phone_format(pilot3))
+const phone3Pattern = computed(() => phone_pattern(pilot3))
+
+function phone_length(pilot) {
+    return pilot.prefix === "+7" ? 10 : 9
+}
+function phone_format(pilot) {
+    if(phone_length(pilot) === 10)
+        return "Wpisz 10 cyfr; format: 1234567890"
+    else
+        return "Wpisz 9 cyfr; format: 123456789"
+}
+function phone_pattern(pilot) {
+    return pilot.prefix === "+7"
+        ? "[0-9]{10}"
+        : "[0-9]{9}"
+}
+
 
 onMounted(() => {
     // Fetch all the forms we want to apply custom Bootstrap validation styles to
@@ -53,6 +78,7 @@ onMounted(() => {
             }
             else {
                 form.classList.add('was-validated')
+                SubmitButtonDisabled.value = true
 
                 let data = {
                     id: props.record.id,
@@ -75,8 +101,13 @@ onMounted(() => {
                 .then(response => {
                     if(response.status === 200)
                         emit('back')
+                    else
+                        SubmitButtonDisabled.value = false
                 })
-                .catch(err => console.error("SRA update error:", err))
+                .catch(err => {
+                    console.error("SRA update error:", err)
+                    SubmitButtonDisabled.value = false
+                })
             }
         }, false)
     })
@@ -112,6 +143,7 @@ function initPilotData(p, src) {
     p.number = parts[1]
 }
 
+const SubmitButtonDisabled = ref(false)
 </script>
 
 <template>
@@ -166,7 +198,7 @@ function initPilotData(p, src) {
                     <label class="form-check-label" for="p1">Potrzebne miejsce parkingowe</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="bus_parking_mode" id="p1" 
+                    <input class="form-check-input" type="radio" name="bus_parking_mode" id="p2" 
                         :checked="bus.parking_mode === 'not_needed'"
                         @input="bus.parking_mode = 'not_needed'"
                     />
@@ -217,7 +249,7 @@ function initPilotData(p, src) {
                         <div class="input-group">
                             <select 
                                 v-model="pilot1.prefix"
-                                style="max-width: 90pt"
+                                style="max-width: 110pt"
                                 class="form-select"
                                 required
                             >
@@ -228,7 +260,10 @@ function initPilotData(p, src) {
                             <input 
                                 v-model="pilot1.number"
                                 class="form-control" 
-                                type="tel" 
+                                type="tel"
+                                :maxlength="phone1Length"
+                                :pattern="phone1Pattern"
+                                :placeholder="phone1Format"
                                 required>
                         </div>
                     </div>
@@ -261,7 +296,7 @@ function initPilotData(p, src) {
                         <div class="input-group">
                             <select 
                                 v-model="pilot1.prefix"
-                                style="max-width: 90pt"
+                                style="max-width: 110pt"
                                 class="form-select" 
                                 required
                             >
@@ -272,7 +307,10 @@ function initPilotData(p, src) {
                             <input 
                                 v-model="pilot1.number"
                                 class="form-control" 
-                                type="tel" 
+                                type="tel"
+                                :maxlength="phone1Length"
+                                :pattern="phone1Pattern"
+                                :placeholder="phone1Format"
                                 required>
                         </div>
                     </div>
@@ -282,11 +320,11 @@ function initPilotData(p, src) {
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Imię</label>
-                        <input class="form-control" required>
+                        <input v-model="pilot2.fn" class="form-control" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Nazwisko</label>
-                        <input class="form-control" required>
+                        <input v-model="pilot2.ln" class="form-control" required>
                     </div>
                 </div>
                 <div class="mt-1 row g-3">
@@ -303,7 +341,7 @@ function initPilotData(p, src) {
                         <div class="input-group">
                             <select 
                                 v-model="pilot2.prefix"
-                                style="max-width: 90pt"
+                                style="max-width: 110pt"
                                 class="form-select" 
                                 required
                             >
@@ -315,6 +353,9 @@ function initPilotData(p, src) {
                                 v-model="pilot2.number"
                                 class="form-control" 
                                 type="tel" 
+                                :maxlength="phone2Length"
+                                :pattern="phone2Pattern"
+                                :placeholder="phone2Format"
                                 required>
                         </div>
                     </div>
@@ -324,11 +365,11 @@ function initPilotData(p, src) {
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Imię</label>
-                        <input class="form-control" required>
+                        <input v-model="pilot3.fn" class="form-control" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Nazwisko</label>
-                        <input class="form-control" required>
+                        <input v-model="pilot3.ln" class="form-control" required>
                     </div>
                 </div>
                 <div class="mt-1 row g-3">
@@ -345,7 +386,7 @@ function initPilotData(p, src) {
                         <div class="input-group">
                             <select 
                                 v-model="pilot3.prefix"
-                                style="max-width: 90pt"
+                                style="max-width: 110pt"
                                 class="form-select" 
                                 required
                             >
@@ -356,7 +397,10 @@ function initPilotData(p, src) {
                             <input 
                                 v-model="pilot3.number"
                                 class="form-control" 
-                                type="tel" 
+                                type="tel"
+                                :maxlength="phone3Length"
+                                :pattern="phone3Pattern"
+                                :placeholder="phone3Format"
                                 required>
                         </div>
                     </div>
@@ -375,6 +419,7 @@ function initPilotData(p, src) {
             <button 
                 type="submit" 
                 class="mt-5 btn btn-lg btn-outline-primary"
+                :disabled="SubmitButtonDisabled"
             >
                 <i class="fa-solid fa-save" />
                 Zapisz
