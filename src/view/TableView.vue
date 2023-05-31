@@ -1,12 +1,15 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import xlsxIcon from '@/components/xlsxIcon.vue'
+import DeleteModal from '@/components/DeleteModal.vue'
 
 defineEmits(['edit'])
 const records = ref([])
 const error = ref(false)
 
-onMounted(() => {
+onMounted(() => loadData())
+
+function loadData() {
     fetch('/api/sra/table', {
         method: "GET",
         headers: {
@@ -26,7 +29,7 @@ onMounted(() => {
         console.log('Get SRA table error:', err)
         error.value = true
     })
-})
+}
 
 function busType(bt) {
     switch(bt) {
@@ -63,6 +66,24 @@ function busDistance(v) {
 
 function onExport() {
     window.location = '/api/sra/export/xlsx'
+}
+
+const deletingRecord = ref(undefined)
+function onStartDeleteItem(item) {
+    console.log('Start delete item:', item)
+    deletingRecord.value = item
+}
+function onDelete() {
+    console.log('Do delete SRA item:', deletingRecord.value.id)
+    fetch(`/api/sra/delete/${deletingRecord.value.id}`)
+    .then(response => {
+        if(response.status === 200) {
+            deletingRecord.value = null
+            records.value = []
+            loadData()
+        }
+    })
+    .catch(err => console.error('SRA deleting error:', err))
 }
 </script>
 
@@ -153,18 +174,33 @@ function onExport() {
 
                     <td>{{ item.info }}</td>
 
-                    <td>
+                    <td class="btns-layout">
                         <button 
                             class="btn btn-outline-primary" 
                             title="Edycja"
                             @click="$emit('edit', item)"
                         >
-                            <i class="fa-solid fa-edit" />
+                            <i class="fa-solid fa-pen" />
+                        </button>
+                        <button
+                            class="btn btn-outline-danger"
+                            title="Usuń"
+                            @click="onStartDeleteItem(item)"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteModal"
+                        >
+                            <i class="fa-solid fa-trash" />
                         </button>
                     </td>
                 </tr>
             </tbody>
         </table>
+
+        <DeleteModal 
+            id="deleteModal"
+            :record="deletingRecord"
+            @ok="onDelete"
+        />
     </template>
 </template>
 
@@ -187,5 +223,12 @@ div.mybtn {
     flex-direction: row;
     align-items: center;
     gap: 9pt;
+}
+
+td.btns-layout {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6pt;
 }
 </style>
