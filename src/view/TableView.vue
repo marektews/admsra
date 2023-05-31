@@ -174,23 +174,25 @@ function onDelete() {
 
                     <td>{{ item.info }}</td>
 
-                    <td class="btns-layout">
-                        <button 
-                            class="btn btn-outline-primary" 
-                            title="Edycja"
-                            @click="$emit('edit', item)"
-                        >
-                            <i class="fa-solid fa-pen" />
-                        </button>
-                        <button
-                            class="btn btn-outline-danger"
-                            title="Usuń"
-                            @click="onStartDeleteItem(item)"
-                            data-bs-toggle="modal"
-                            data-bs-target="#deleteModal"
-                        >
-                            <i class="fa-solid fa-trash" />
-                        </button>
+                    <td>
+                        <div class="btns-layout">
+                            <button 
+                                class="btn btn-outline-primary" 
+                                title="Edycja"
+                                @click="$emit('edit', item)"
+                            >
+                                <i class="fa-solid fa-pen" />
+                            </button>
+                            <button
+                                class="btn btn-outline-danger"
+                                title="Usuń"
+                                @click="onStartDeleteItem(item)"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal"
+                            >
+                                <i class="fa-solid fa-trash" />
+                            </button>
+                        </div>
                     </td>
                 </tr>
             </tbody>
@@ -225,7 +227,7 @@ div.mybtn {
     gap: 9pt;
 }
 
-td.btns-layout {
+.btns-layout {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
