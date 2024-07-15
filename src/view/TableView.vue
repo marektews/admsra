@@ -1,5 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import xlsxIcon from '@/components/xlsxIcon.vue'
 import DeleteModal from '@/components/DeleteModal.vue'
 
@@ -181,7 +183,7 @@ function onDelete() {
                                 title="Edycja"
                                 @click="$emit('edit', item)"
                             >
-                                <i class="fa-solid fa-pen" />
+                                <FontAwesomeIcon :icon="faPen" />
                             </button>
                             <button
                                 class="btn btn-outline-danger"
@@ -190,7 +192,7 @@ function onDelete() {
                                 data-bs-toggle="modal"
                                 data-bs-target="#deleteModal"
                             >
-                                <i class="fa-solid fa-trash" />
+                                <FontAwesomeIcon :icon="faTrash" />
                             </button>
                         </div>
                     </td>

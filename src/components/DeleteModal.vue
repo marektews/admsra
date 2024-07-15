@@ -1,7 +1,9 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
-defineEmits(['ok'])
+const emit = defineEmits(['ok'])
 const props = defineProps(['record'])
 const confirmationData = ref('')
 
@@ -31,23 +33,23 @@ const isOkEnabled = computed(() => {
                 </div>
 
                 <div class="modal-body">
-                    <p>
+                    <div>
                         <div>Dane do skasowania:</div>
                         <div class="ms-3">
                             <div>Zbor: {{ props.record?.zbor.name }}</div>
                             <div>Bus: {{ busType(props.record?.bus.type) }}</div>
                             <div>Pilot: {{ props.record?.pilot1.fn }} {{ props.record?.pilot1.ln }}</div>
                         </div>
-                    </p>
+                    </div>
                     <p>
-                    <b>Czy na pewno skasować ten wpis?</b>
+                        <b>Czy na pewno skasować ten wpis?</b>
                     </p>
-                    <p>
+                    <div>
                         <div>Potwierdź wpisując adres email pilota: <b>{{ props.record?.pilot1.email }}</b></div>
                         <div>
                             <input class="form-control" v-model="confirmationData" type="text" />
                         </div>
-                    </p>
+                    </div>
                 </div>
 
                 <div class="modal-footer">
@@ -64,25 +66,12 @@ const isOkEnabled = computed(() => {
                         class="btn btn-danger"
                         data-bs-dismiss="modal"
                         :disabled="!isOkEnabled"
-                        @click="$emit('ok')"
+                        @click="emit('ok')"
                     >
-                        <i class="fa-solid fa-trash" />
-                        Usuń
+                        <FontAwesomeIcon :icon="faTrash" /> Usuń
                     </button>
                 </div>
             </div>
         </div>
     </div>
 </template>
-
-<style>
-@media (prefers-color-scheme: dark) {
-    div.modal-content {
-        background-color: var(--color-background) !important;
-    }
-
-    .btn-close {
-        color: var(--color-text) !important;
-    }
-}
-</style>

@@ -1,5 +1,7 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faBus, faUser, faCircleInfo, faSave, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 
 const emit = defineEmits(['back'])
 const props = defineProps({
@@ -113,7 +115,7 @@ onMounted(() => {
     })
 })
 
-watch(() => props.record, (nv, _) => {
+watch(() => props.record, (nv) => {
     console.log("Watcher props.record", nv)
     // Copy data from props
     bus.distance = nv.bus.distance
@@ -159,7 +161,7 @@ const SubmitButtonDisabled = ref(false)
             novalidate
         >
             <h4>
-                <i class="fa-solid fa-bus" />
+                <FontAwesomeIcon :icon="faBus" />
                 Bus
             </h4>
 
@@ -208,7 +210,7 @@ const SubmitButtonDisabled = ref(false)
 
 
             <h4 class="mt-5">
-                <i class="fa-solid fa-user" />
+                <FontAwesomeIcon :icon="faUser" />
                 Pilot
             </h4>
 
@@ -408,7 +410,7 @@ const SubmitButtonDisabled = ref(false)
             </template>
 
             <h4 class="mt-5">
-                <i class="fa-solid fa-circle-info" />
+                <FontAwesomeIcon :icon="faCircleInfo" />
                 Dodatkowe informacje
             </h4>
 
@@ -421,14 +423,14 @@ const SubmitButtonDisabled = ref(false)
                 class="mt-5 btn btn-lg btn-outline-primary"
                 :disabled="SubmitButtonDisabled"
             >
-                <i class="fa-solid fa-save" />
+                <FontAwesomeIcon :icon="faSave" />
                 Zapisz
             </button>
             <button 
                 class="mt-5 ms-2 btn btn-lg btn-outline-secondary"
                 @click="$emit('back')"
             >
-                <i class="fa-solid fa-chevron-left" />
+                <FontAwesomeIcon :icon="faChevronLeft" />
                 Anuluj
             </button>
         </form>
