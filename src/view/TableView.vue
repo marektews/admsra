@@ -116,7 +116,7 @@ function onDelete() {
                     <th rowspan="2">#</th>
                     <th rowspan="2">Data zgłoszenia</th>
                     <th colspan="3">Zbór</th>
-                    <th colspan="3">Bus</th>
+                    <th colspan="4">Bus</th>
                     <th colspan="3">Pilot</th>
                     <th rowspan="2">Info</th>
                     <th rowspan="2">Ops</th>
@@ -126,6 +126,7 @@ function onDelete() {
                     <th>Numer</th>
                     <th>Nazwa</th>
 
+                    <th>Lp</th>
                     <th>Typ</th>
                     <th>Trasa</th>
                     <th>Parking</th>
@@ -145,6 +146,7 @@ function onDelete() {
                     <td>{{ item.zbor.number }}</td>
                     <td>{{ item.zbor.name }}</td>
 
+                    <td>{{ item.bus.lp }}</td>
                     <td>{{ busType(item.bus.type) }}</td>
                     <td>{{ busDistance(item.bus.distance) }}</td>
                     <td>{{ parkingMode(item.bus.parking_mode) }}</td>
