@@ -110,13 +110,13 @@ function onDelete() {
             </button>
         </div>
 
-        <table class="table table-sm table-dark table-hover table-bordered">
+        <table class="table table-sm table-hover table-bordered">
             <thead>
                 <tr>
                     <th rowspan="2">#</th>
                     <th rowspan="2">Data zgłoszenia</th>
-                    <th colspan="3">Zbór</th>
-                    <th colspan="4">Bus</th>
+                    <th colspan="4">Zbór</th>
+                    <th colspan="5">Bus</th>
                     <th colspan="3">Pilot</th>
                     <th rowspan="2">Info</th>
                     <th rowspan="2">Ops</th>
@@ -125,8 +125,10 @@ function onDelete() {
                     <th>Język</th>
                     <th>Numer</th>
                     <th>Nazwa</th>
+                    <th>Tura</th>
 
                     <th>Lp</th>
+                    <th>Prefix</th>
                     <th>Typ</th>
                     <th>Trasa</th>
                     <th>Parking</th>
@@ -145,8 +147,10 @@ function onDelete() {
                     <td>{{ item.zbor.lang }}</td>
                     <td>{{ item.zbor.number }}</td>
                     <td>{{ item.zbor.name }}</td>
+                    <td>W{{ item.zbor.tura }}</td>
 
                     <td>{{ item.bus.lp }}</td>
+                    <td>{{ item.bus.prefix }}</td>
                     <td>{{ busType(item.bus.type) }}</td>
                     <td>{{ busDistance(item.bus.distance) }}</td>
                     <td>{{ parkingMode(item.bus.parking_mode) }}</td>

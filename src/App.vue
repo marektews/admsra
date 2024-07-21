@@ -22,6 +22,12 @@ const edited = ref(undefined)
     </main>
 </template>
 
+<style>
+.uppercase {
+    text-transform: uppercase;
+}
+</style>
+
 <style scoped>
 header {
     display: flex;

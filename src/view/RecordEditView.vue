@@ -13,7 +13,9 @@ const info = ref('')
 const bus = reactive({
     distance: "",
     parking_mode: "",
-    type: ""
+    type: "",
+    lp: undefined,
+    prefix: ""
 })
 const pilot1 = reactive({
     fn: "",
@@ -118,6 +120,8 @@ onMounted(() => {
 watch(() => props.record, (nv) => {
     console.log("Watcher props.record", nv)
     // Copy data from props
+    bus.lp = nv.bus.lp
+    bus.prefix = nv.bus.prefix.toUpperCase()
     bus.distance = nv.bus.distance
     bus.parking_mode = nv.bus.parking_mode
     bus.type = nv.bus.type
@@ -161,13 +165,86 @@ const SubmitButtonDisabled = ref(false)
             novalidate
         >
             <h4>
-                <FontAwesomeIcon :icon="faBus" />
-                Bus
+                <FontAwesomeIcon :icon="faBus" /> Bus
             </h4>
 
             <input type="hidden" id="sraid" :value="props.record.id" />
 
             <div>
+                <label class="form-label">
+                    Liczba porządkowa (ważne w przypadku wielu autokarów z jednego zboru)
+                </label>
+                <div class="bus-lp-class">
+                    <div class="form-check">
+                        <input 
+                            class="form-check-input" 
+                            type="radio" 
+                            name="bus_lp" 
+                            id="bus-lp-none"
+                            v-model="bus.lp"
+                            :value="null"
+                        >
+                        <label class="form-check-label" for="bus-lp-none">
+                            Brak, tylko jeden autobus jest zgłoszony przez ten zbór
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input 
+                            class="form-check-input" 
+                            type="radio" 
+                            name="bus_lp" 
+                            id="bus-lp-1"
+                            v-model="bus.lp"
+                            :value="1"
+                        >
+                        <label class="form-check-label" for="bus-lp-1">
+                            1 (pierwszy)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input 
+                            class="form-check-input" 
+                            type="radio" 
+                            name="bus_lp" 
+                            id="bus-lp-2"
+                            v-model="bus.lp"
+                            :value="2"
+                        >
+                        <label class="form-check-label" for="bus-lp-2">
+                            2 (drugi)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input 
+                            class="form-check-input" 
+                            type="radio" 
+                            name="bus_lp"
+                            id="bus-lp-3"
+                            v-model="bus.lp"
+                            :value="3"
+                        >
+                        <label class="form-check-label" for="bus-lp-3">
+                            3 (trzeci)
+                        </label>
+                    </div>
+                </div>
+            </div>
+                
+            <div class="mt-3">
+                <label class="form-label" for="bus_prefix">
+                    Litera na identyfikatorze (tura i sektor obliczane są automatycznie na podstawie rozkładu jazdy)
+                </label>
+                <input 
+                    v-model="bus.prefix" 
+                    type="text" 
+                    maxlength="1" 
+                    class="form-control uppercase" 
+                    name="bus_prefix" 
+                    id="bus_prefix"
+                >
+            </div>
+
+            <div class="mt-3">
                 <label class="form-label">Typ pojazdu</label>
                 <select class="form-select" v-model="bus.type" name="bus_type">
                     <option value="minibus_9">Minibus do 9 osób</option>
@@ -436,3 +513,12 @@ const SubmitButtonDisabled = ref(false)
         </form>
     </div>
 </template>
+
+<style scoped>
+.bus-lp-class {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2pt 16pt;
+}
+</style>
