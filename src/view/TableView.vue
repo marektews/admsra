@@ -116,7 +116,7 @@ function onDelete() {
                     <th rowspan="2">#</th>
                     <th rowspan="2">Data zgłoszenia</th>
                     <th colspan="4">Zbór</th>
-                    <th colspan="5">Bus</th>
+                    <th colspan="6">Bus</th>
                     <th colspan="3">Pilot</th>
                     <th rowspan="2">Info</th>
                     <th rowspan="2">Ops</th>
@@ -129,6 +129,7 @@ function onDelete() {
 
                     <th>Lp</th>
                     <th>Prefix</th>
+                    <th>Nadany Identyfikator</th>
                     <th>Typ</th>
                     <th>Trasa</th>
                     <th>Parking</th>
@@ -151,6 +152,7 @@ function onDelete() {
 
                     <td>{{ item.bus.lp }}</td>
                     <td>{{ item.bus.prefix }}</td>
+                    <td>{{ item.bus.static_identifier }}</td>
                     <td>{{ busType(item.bus.type) }}</td>
                     <td>{{ busDistance(item.bus.distance) }}</td>
                     <td>{{ parkingMode(item.bus.parking_mode) }}</td>

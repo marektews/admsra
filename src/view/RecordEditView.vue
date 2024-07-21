@@ -9,13 +9,16 @@ const props = defineProps({
 })
 
 const isOnePilot = ref(false)
+const usedStaticIdentifier = ref(false)
+
 const info = ref('')
 const bus = reactive({
     distance: "",
     parking_mode: "",
     type: "",
     lp: undefined,
-    prefix: ""
+    prefix: "",
+    static_identifier: null
 })
 const pilot1 = reactive({
     fn: "",
@@ -94,6 +97,10 @@ onMounted(() => {
                     data.pilot2 = pilot2
                     data.pilot3 = pilot3
                 }
+                if(!usedStaticIdentifier.value) {
+                    // korekta
+                    data.bus.static_identifier = null
+                }
 
                 fetch('/api/sra/write', {
                     method: "POST",
@@ -121,7 +128,8 @@ watch(() => props.record, (nv) => {
     console.log("Watcher props.record", nv)
     // Copy data from props
     bus.lp = nv.bus.lp
-    bus.prefix = nv.bus.prefix.toUpperCase()
+    bus.prefix = nv.bus.prefix
+    bus.static_identifier = nv.bus.static_identifier
     bus.distance = nv.bus.distance
     bus.parking_mode = nv.bus.parking_mode
     bus.type = nv.bus.type
@@ -134,6 +142,10 @@ watch(() => props.record, (nv) => {
         initPilotData(pilot3, nv.pilot3)
     if(nv.info !== null)
         info.value = nv.info
+
+    if(bus.static_identifier) {
+        usedStaticIdentifier.value = true
+    }
 },
 {
     deep: true,
@@ -229,9 +241,29 @@ const SubmitButtonDisabled = ref(false)
                     </div>
                 </div>
             </div>
-                
+
             <div class="mt-3">
-                <label class="form-label" for="bus_prefix">
+                <label class="form-label" for="bus_static_identifier">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="flexCheckDefault" v-model="usedStaticIdentifier">
+                        <label class="form-check-label" for="flexCheckDefault">
+                            Nadany identyfikator autokaru (system nie będzie stosował automatyki z literą, turą i numerem sektora)
+                        </label>
+                    </div>
+                </label>
+                <input 
+                    v-model="bus.static_identifier" 
+                    type="text" 
+                    maxlength="6" 
+                    class="form-control uppercase" 
+                    name="bus_static_identifier" 
+                    id="bus_static_identifier"
+                    :disabled="!usedStaticIdentifier"
+                >
+            </div>
+
+            <div class="mt-3">
+                <label class="form-label" for="bus_prefix" :class="{'text-muted': usedStaticIdentifier}">
                     Litera na identyfikatorze (tura i sektor obliczane są automatycznie na podstawie rozkładu jazdy)
                 </label>
                 <input 
@@ -241,6 +273,7 @@ const SubmitButtonDisabled = ref(false)
                     class="form-control uppercase" 
                     name="bus_prefix" 
                     id="bus_prefix"
+                    :disabled="usedStaticIdentifier"
                 >
             </div>
 
