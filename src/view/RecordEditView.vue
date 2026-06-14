@@ -16,32 +16,38 @@ const bus = reactive({
     distance: "",
     parking_mode: "",
     type: "",
-    lp: undefined,
-    prefix: "",
+    lp: null,
+    // prefix: "",
     static_identifier: null
 })
 const pilot1 = reactive({
     fn: "",
     ln: "",
     email: "",
-    prefix: "",
-    number: ""
+    phone: {
+        country_code: "",
+        number: ""
+    }
 })
 
 const pilot2 = reactive({
     fn: "",
     ln: "",
     email: "",
-    prefix: "",
-    number: ""
+    phone: {
+        country_code: "",
+        number: ""
+    }
 })
 
 const pilot3 = reactive({
     fn: "",
     ln: "",
     email: "",
-    prefix: "",
-    number: ""
+    phone: {
+        country_code: "",
+        number: ""
+    }
 })
 
 const phone1Length = computed(() => phone_length(pilot1))
@@ -102,7 +108,7 @@ onMounted(() => {
                     data.bus.static_identifier = null
                 }
 
-                fetch('/api/sra/write', {
+                fetch('/api/sra/save', {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -127,7 +133,7 @@ onMounted(() => {
 watch(() => props.record, (nv) => {
     console.log("Watcher props.record", nv)
     // Copy data from props
-    bus.lp = nv.bus.lp
+    bus.lp = nv.bus.lp ? nv.bus.lp : null
     bus.prefix = nv.bus.prefix
     bus.static_identifier = nv.bus.static_identifier
     bus.distance = nv.bus.distance
@@ -153,12 +159,10 @@ watch(() => props.record, (nv) => {
 })
 
 function initPilotData(p, src) {
-    let parts = src.phone.split(' ')
     p.fn = src.fn
     p.ln = src.ln
     p.email = src.email
-    p.prefix = parts[0]
-    p.number = parts[1]
+    p.phone = src.phone
 }
 
 const SubmitButtonDisabled = ref(false)
@@ -167,7 +171,7 @@ const SubmitButtonDisabled = ref(false)
 <template>
     <div class="container">
         <h4>
-            ({{ props.record.zbor.lang }} - {{ props.record.zbor.number }}) {{ props.record.zbor.name }}
+            ({{ props.record.congregation.lang }} - {{ props.record.congregation.number }}) {{ props.record.congregation.name }}
         </h4>
 
         <form 
@@ -262,7 +266,8 @@ const SubmitButtonDisabled = ref(false)
                 >
             </div>
 
-            <div class="mt-3">
+            <!-- Stosowana automatyka na podstawie nazwy terminala -->
+            <!-- <div class="mt-3">
                 <label class="form-label" for="bus_prefix" :class="{'text-muted': usedStaticIdentifier}">
                     Litera na identyfikatorze (tura i sektor obliczane są automatycznie na podstawie rozkładu jazdy)
                 </label>
@@ -275,7 +280,7 @@ const SubmitButtonDisabled = ref(false)
                     id="bus_prefix"
                     :disabled="usedStaticIdentifier"
                 >
-            </div>
+            </div> -->
 
             <div class="mt-3">
                 <label class="form-label">Typ pojazdu</label>
@@ -360,7 +365,7 @@ const SubmitButtonDisabled = ref(false)
                         <label class="form-label">Nr telefonu</label>
                         <div class="input-group">
                             <select 
-                                v-model="pilot1.prefix"
+                                v-model="pilot1.phone.country_code"
                                 style="max-width: 110pt"
                                 class="form-select"
                                 required
@@ -370,7 +375,7 @@ const SubmitButtonDisabled = ref(false)
                                 <option value="+380">UA: +380</option>
                             </select>
                             <input 
-                                v-model="pilot1.number"
+                                v-model="pilot1.phone.number"
                                 class="form-control" 
                                 type="tel"
                                 :maxlength="phone1Length"
@@ -407,7 +412,7 @@ const SubmitButtonDisabled = ref(false)
                         <label class="form-label">Nr telefonu</label>
                         <div class="input-group">
                             <select 
-                                v-model="pilot1.prefix"
+                                v-model="pilot1.phone.country_code"
                                 style="max-width: 110pt"
                                 class="form-select" 
                                 required
@@ -417,7 +422,7 @@ const SubmitButtonDisabled = ref(false)
                                 <option value="+380">UA: +380</option>
                             </select>
                             <input 
-                                v-model="pilot1.number"
+                                v-model="pilot1.phone.number"
                                 class="form-control" 
                                 type="tel"
                                 :maxlength="phone1Length"
@@ -452,7 +457,7 @@ const SubmitButtonDisabled = ref(false)
                         <label class="form-label">Nr telefonu</label>
                         <div class="input-group">
                             <select 
-                                v-model="pilot2.prefix"
+                                v-model="pilot2.phone.country_code"
                                 style="max-width: 110pt"
                                 class="form-select" 
                                 required
@@ -462,7 +467,7 @@ const SubmitButtonDisabled = ref(false)
                                 <option value="+380">UA: +380</option>
                             </select>
                             <input 
-                                v-model="pilot2.number"
+                                v-model="pilot2.phone.number"
                                 class="form-control" 
                                 type="tel" 
                                 :maxlength="phone2Length"
@@ -497,7 +502,7 @@ const SubmitButtonDisabled = ref(false)
                         <label class="form-label">Nr telefonu</label>
                         <div class="input-group">
                             <select 
-                                v-model="pilot3.prefix"
+                                v-model="pilot3.phone.country_code"
                                 style="max-width: 110pt"
                                 class="form-select" 
                                 required
@@ -507,7 +512,7 @@ const SubmitButtonDisabled = ref(false)
                                 <option value="+380">UA: +380</option>
                             </select>
                             <input 
-                                v-model="pilot3.number"
+                                v-model="pilot3.phone.number"
                                 class="form-control" 
                                 type="tel"
                                 :maxlength="phone3Length"

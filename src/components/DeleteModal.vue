@@ -19,9 +19,57 @@ function busType(bt) {
     return bt
 }
 
-const isOkEnabled = computed(() => {
-    return confirmationData.value === props.record?.pilot1.email
+const congregationName = computed(() => {
+    const rc = props.record
+    if(!rc) return ""
+    if(rc.hasbus)
+        return rc.hasbus.congregation.name
+    else
+    if(rc.nobus)
+        return rc.nobus.congregation.name
+    else
+        return ""
 })
+
+const bustype = computed(() => {
+    const rc = props.record
+    if(rc && rc.hasbus)
+        return rc.hasbus.bus.type
+    else
+        return ""
+})
+
+const pilotName = computed(() => {
+    const rc = props.record
+    if(rc && rc.hasbus)
+        return `${rc.hasbus.pilot1.fn} ${rc.hasbus.pilot1.ln}`
+    else
+        return ""
+})
+
+const pin = computed(() => {
+    const rc = props.record
+    if(rc) {
+        if(rc.hasbus)
+            return rc.hasbus.id.slice(-4)
+        else
+        if(rc.nobus)
+            return rc.nobus.id.slice(-4)
+    }
+    return ""
+})
+
+const isOkEnabled = computed(() => {
+    return confirmationData.value === pin.value
+})
+
+function onDelete() {
+    confirmationData.value = ''
+    emit('ok')
+}
+function onExit() {
+    confirmationData.value = ''
+}
 </script>
 
 <template>
@@ -36,16 +84,16 @@ const isOkEnabled = computed(() => {
                     <div>
                         <div>Dane do skasowania:</div>
                         <div class="ms-3">
-                            <div>Zbor: {{ props.record?.zbor.name }}</div>
-                            <div>Bus: {{ busType(props.record?.bus.type) }}</div>
-                            <div>Pilot: {{ props.record?.pilot1.fn }} {{ props.record?.pilot1.ln }}</div>
+                            <div>Zbor: {{ congregationName }}</div>
+                            <div>Bus: {{ busType(bustype) }}</div>
+                            <div>Pilot: {{ pilotName }}</div>
                         </div>
                     </div>
-                    <p>
-                        <b>Czy na pewno skasować ten wpis?</b>
-                    </p>
+                    <h5 class="mt-3">
+                        Czy na pewno skasować ten wpis?
+                    </h5>
                     <div>
-                        <div>Potwierdź wpisując adres email pilota: <b>{{ props.record?.pilot1.email }}</b></div>
+                        <div>Potwierdź wpisując PIN: <b>{{ pin }}</b></div>
                         <div>
                             <input class="form-control" v-model="confirmationData" type="text" />
                         </div>
@@ -58,6 +106,7 @@ const isOkEnabled = computed(() => {
                         class="btn btn-secondary"
                         data-bs-dismiss="modal"
                         aria-label="Zamknij"
+                        @click="onExit"
                     >
                         Zamknij
                     </button>
@@ -66,7 +115,7 @@ const isOkEnabled = computed(() => {
                         class="btn btn-danger"
                         data-bs-dismiss="modal"
                         :disabled="!isOkEnabled"
-                        @click="emit('ok')"
+                        @click="onDelete"
                     >
                         <FontAwesomeIcon :icon="faTrash" /> Usuń
                     </button>

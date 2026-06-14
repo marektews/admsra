@@ -19,14 +19,20 @@ function loadData() {
         }
     })
     .then(response => {
-        console.log('Get SRA response:', response)
-        if(response.status === 200)
+        // console.log('Get SRA response:', response)
+        if(response.status === 200) {
             return response.json()
-        else
+        }
+        else {
+            console.log('Get SRA table status:', response.status, response.statusText)
             error.value = true
             return []
+        }
     })
-    .then(d => records.value = d)
+    .then(d => {
+        console.log('Get SRA table:', d)
+        records.value = d
+    })
     .catch(err => {
         console.log('Get SRA table error:', err)
         error.value = true
@@ -143,53 +149,65 @@ function onDelete() {
                 <tr v-for="(item, index) in records" :key="index">
                     <td>{{ index + 1 }}</td>
 
-                    <td>{{ item.timestamp }}</td>
+                    <template v-if="'hasbus' in item">
+                        <td>{{ item.hasbus.timestamp }}</td>
 
-                    <td>{{ item.zbor.lang }}</td>
-                    <td>{{ item.zbor.number }}</td>
-                    <td>{{ item.zbor.name }}</td>
-                    <td>W{{ item.zbor.tura }}</td>
+                        <td>{{ item.hasbus.congregation.lang }}</td>
+                        <td>{{ item.hasbus.congregation.number }}</td>
+                        <td>{{ item.hasbus.congregation.name }}</td>
+                        <td>{{ item.hasbus.congregation.tura }}</td>
+                    
+                        <td>{{ item.hasbus.bus.lp ? item.hasbus.bus.lp : 0 }}</td>
+                        <td>{{ item.hasbus.bus.prefix ? item.hasbus.bus.prefix : "" }}</td>
+                        <td>{{ item.hasbus.bus.static_identifier }}</td>
+                        <td>{{ busType(item.hasbus.bus.type) }}</td>
+                        <td>{{ busDistance(item.hasbus.bus.distance) }}</td>
+                        <td>{{ parkingMode(item.hasbus.bus.parking_mode) }}</td>
 
-                    <td>{{ item.bus.lp }}</td>
-                    <td>{{ item.bus.prefix }}</td>
-                    <td>{{ item.bus.static_identifier }}</td>
-                    <td>{{ busType(item.bus.type) }}</td>
-                    <td>{{ busDistance(item.bus.distance) }}</td>
-                    <td>{{ parkingMode(item.bus.parking_mode) }}</td>
+                        <template v-if="!('pilot2' in item.hasbus)">
+                            <td colspan="3">
+                                <div>{{ item.hasbus.pilot1.fn }} {{ item.hasbus.pilot1.ln }}</div>
+                                <div>{{ item.hasbus.pilot1.phone.country_code }} {{ item.hasbus.pilot1.phone.number }}</div>
+                                <div>{{ item.hasbus.pilot1.email }}</div>
+                            </td>
+                        </template>
+                        <template v-else>
+                            <td>
+                                <div>{{ item.hasbus.pilot1.fn }} {{ item.hasbus.pilot1.ln }}</div>
+                                <div>{{ item.hasbus.pilot1.phone.country_code }} {{ item.hasbus.pilot1.phone.number }}</div>
+                                <div>{{ item.hasbus.pilot1.email }}</div>
+                            </td>
+                            <td>
+                                <div>{{ item.hasbus.pilot2.fn }} {{ item.hasbus.pilot2.ln }}</div>
+                                <div>{{ item.hasbus.pilot2.phone.country_code }} {{ item.hasbus.pilot2.phone.number }}</div>
+                                <div>{{ item.hasbus.pilot2.email }}</div>
+                            </td>
+                            <td>
+                                <div>{{ item.hasbus.pilot3.fn }} {{ item.hasbus.pilot3.ln }}</div>
+                                <div>{{ item.hasbus.pilot3.phone.country_code }} {{ item.hasbus.pilot3.phone.number }}</div>
+                                <div>{{ item.hasbus.pilot3.email }}</div>
+                            </td>
+                        </template>
 
-                    <template v-if="!('pilot2' in item)">
-                        <td colspan="3">
-                            <div>{{ item.pilot1.fn }} {{ item.pilot1.ln }}</div>
-                            <div>{{ item.pilot1.phone }}</div>
-                            <div>{{ item.pilot1.email }}</div>
-                        </td>
+                        <td>{{ item.hasbus.info }}</td>
                     </template>
                     <template v-else>
-                        <td>
-                            <div>{{ item.pilot1.fn }} {{ item.pilot1.ln }}</div>
-                            <div>{{ item.pilot1.phone }}</div>
-                            <div>{{ item.pilot1.email }}</div>
-                        </td>
-                        <td>
-                            <div>{{ item.pilot2.fn }} {{ item.pilot2.ln }}</div>
-                            <div>{{ item.pilot2.phone }}</div>
-                            <div>{{ item.pilot2.email }}</div>
-                        </td>
-                        <td>
-                            <div>{{ item.pilot3.fn }} {{ item.pilot3.ln }}</div>
-                            <div>{{ item.pilot3.phone }}</div>
-                            <div>{{ item.pilot3.email }}</div>
-                        </td>
-                    </template>
+                        <td>{{ item.nobus.timestamp }}</td>
 
-                    <td>{{ item.info }}</td>
+                        <td>{{ item.nobus.congregation.lang }}</td>
+                        <td>{{ item.nobus.congregation.number }}</td>
+                        <td>{{ item.nobus.congregation.name }}</td>
+                        <td>{{ item.nobus.congregation.tura }}</td>
+
+                        <td colspan="10">zbór nie planuje wynajmować autokaru</td>
+                    </template>
 
                     <td>
                         <div class="btns-layout">
-                            <button 
+                            <button v-if="item.hasbus"
                                 class="btn btn-outline-primary" 
                                 title="Edycja"
-                                @click="$emit('edit', item)"
+                                @click="$emit('edit', item.hasbus)"
                             >
                                 <FontAwesomeIcon :icon="faPen" />
                             </button>
