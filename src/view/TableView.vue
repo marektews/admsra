@@ -82,8 +82,10 @@ function onStartDeleteItem(item) {
     deletingRecord.value = item
 }
 function onDelete() {
-    console.log('Do delete SRA item:', deletingRecord.value.id)
-    fetch(`/api/sra/delete/${deletingRecord.value.id}`)
+    const rec = deletingRecord.value
+    const id = (rec.hasbus || rec.nobus).id
+    console.log('Do delete SRA item:', id)
+    fetch(`/api/sra/delete/${id}`)
     .then(response => {
         if(response.status === 200) {
             deletingRecord.value = null
